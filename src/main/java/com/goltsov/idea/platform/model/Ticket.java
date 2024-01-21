@@ -25,21 +25,6 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(String origin, String originName, String destination, String destinationName, String departureDate,
-                  String departureTime, String arrivalDate, String arrivalTime, Carrier carrier, int stops, int price) {
-        this.origin = origin;
-        this.originName = originName;
-        this.destination = destination;
-        this.destinationName = destinationName;
-        this.departureDate = departureDate;
-        this.departureTime = departureTime;
-        this.arrivalDate = arrivalDate;
-        this.arrivalTime = arrivalTime;
-        this.carrier = carrier;
-        this.stops = stops;
-        this.price = price;
-    }
-
     public String getOrigin() {
         return origin;
     }
@@ -72,8 +57,8 @@ public class Ticket {
         return arrivalTime;
     }
 
-    public String getCarrier() {
-        return carrier.toString();
+    public Carrier getCarrier() {
+        return carrier;
     }
 
     public int getStops() {
@@ -84,20 +69,75 @@ public class Ticket {
         return price;
     }
 
+    public Ticket setOrigin(String origin) {
+        this.origin = origin;
+        return this;
+    }
+
+    public Ticket setOriginName(String originName) {
+        this.originName = originName;
+        return this;
+    }
+
+    public Ticket setDestination(String destination) {
+        this.destination = destination;
+        return this;
+    }
+
+    public Ticket setDestinationName(String destinationName) {
+        this.destinationName = destinationName;
+        return this;
+    }
+
+    public Ticket setDepartureDate(String departureDate) {
+        this.departureDate = departureDate;
+        return this;
+    }
+
+    public Ticket setDepartureTime(String departureTime) {
+        this.departureTime = departureTime;
+        return this;
+    }
+
+    public Ticket setArrivalDate(String arrivalDate) {
+        this.arrivalDate = arrivalDate;
+        return this;
+    }
+
+    public Ticket setArrivalTime(String arrivalTime) {
+        this.arrivalTime = arrivalTime;
+        return this;
+    }
+
+    public Ticket setCarrier(Carrier carrier) {
+        this.carrier = carrier;
+        return this;
+    }
+
+    public Ticket setStops(int stops) {
+        this.stops = stops;
+        return this;
+    }
+
+    public Ticket setPrice(int price) {
+        this.price = price;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return "\nTicket{" +
-                "origin='" + origin + '\'' +
-                ", origin_name='" + originName + '\'' +
-                ", destination='" + destination + '\'' +
-                ", destination_name='" + destinationName + '\'' +
-                ", departure_date='" + departureDate + '\'' +
-                ", departure_time='" + departureTime + '\'' +
-                ", arrival_date='" + arrivalDate + '\'' +
-                ", arrival_time='" + arrivalTime + '\'' +
-                ", carrier='" + carrier + '\'' +
-                ", stops=" + stops +
-                ", price=" + price +
-                '}';
+        return "\nTicket{"
+                + "origin='" + origin + '\''
+                + ", origin_name='" + originName + '\''
+                + ", destination='" + destination + '\''
+                + ", destination_name='" + destinationName + '\''
+                + ", departure_date='" + departureDate + '\''
+                + ", departure_time='" + departureTime + '\''
+                + ", arrival_date='" + arrivalDate + '\''
+                + ", arrival_time='" + arrivalTime + '\''
+                + ", carrier='" + carrier + '\''
+                + ", stops=" + stops
+                + ", price=" + price
+                + '}';
     }
 }
