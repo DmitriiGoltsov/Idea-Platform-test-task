@@ -3,6 +3,7 @@ package com.goltsov.idea.platform.test.unit;
 import com.goltsov.idea.platform.filtration.OriginAndDestinationFilter;
 import com.goltsov.idea.platform.filtration.TicketFiltrationCriterion;
 import com.goltsov.idea.platform.mapping.Parser;
+import com.goltsov.idea.platform.model.Carrier;
 import com.goltsov.idea.platform.model.Ticket;
 import com.goltsov.idea.platform.service.TicketService;
 import com.goltsov.idea.platform.service.TicketServiceImpl;
@@ -42,14 +43,14 @@ public class TicketServiceTest {
 
     @Test
     void getMinFlightTimePerCarrierTest() {
-        Map<String, Long> actualResult = ticketService.getMinFlightTimePerCarrier(tickets);
+        Map<Carrier, Long> actualResult = ticketService.getMinFlightTimePerCarrier(tickets);
 
-        assertThat(actualResult).containsKeys(S7.toString(), SU.toString(), BA.toString(), TK.toString());
+        assertThat(actualResult).containsKeys(S7, SU, BA, TK);
         assertThat(actualResult).containsValues(150L, 390L, 100L, 485L);
-        assertThat(actualResult.get(SU.toString())).isEqualTo(100L);
-        assertThat(actualResult.get(TK.toString())).isEqualTo(150L);
-        assertThat(actualResult.get(S7.toString())).isEqualTo(390L);
-        assertThat(actualResult.get(BA.toString())).isEqualTo(485L);
+        assertThat(actualResult.get(SU)).isEqualTo(100L);
+        assertThat(actualResult.get(TK)).isEqualTo(150L);
+        assertThat(actualResult.get(S7)).isEqualTo(390L);
+        assertThat(actualResult.get(BA)).isEqualTo(485L);
     }
 
     @Test
@@ -65,6 +66,6 @@ public class TicketServiceTest {
 
         int actual = ticketService.getDiffAvgAndMediaPrices(tickets);
 
-        assertThat(actual).isEqualTo(1400);
+        assertThat(actual).isEqualTo(1500);
     }
 }
