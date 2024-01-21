@@ -1,6 +1,7 @@
 package com.goltsov.idea.platform.service;
 
 import com.goltsov.idea.platform.filtration.TicketFiltrationCriterion;
+import com.goltsov.idea.platform.model.Carrier;
 import com.goltsov.idea.platform.model.Ticket;
 
 import java.time.Duration;
@@ -21,14 +22,14 @@ public class TicketServiceImpl implements TicketService {
     private static final Logger LOGGER = Logger.getLogger("Ticket service logger");
 
     @Override
-    public Map<String, Long> getMinFlightTimePerCarrier(List<Ticket> tickets) {
-        Map<String, Long> result = new HashMap<>();
+    public Map<Carrier, Long> getMinFlightTimePerCarrier(List<Ticket> tickets) {
+        Map<Carrier, Long> result = new HashMap<>();
 
         for (var ticket : tickets) {
-            String currentCarrier = ticket.getCarrier();
+            Carrier currentCarrier = ticket.getCarrier();
             if (!result.containsKey(currentCarrier)) {
                 result.put(currentCarrier, getFlightDuration(ticket));
-            } else if (result.containsKey(currentCarrier) && result.get(currentCarrier) > getFlightDuration(ticket)) {
+            } else if (result.get(currentCarrier) > getFlightDuration(ticket)) {
                 result.put(currentCarrier, getFlightDuration(ticket));
             }
         }
@@ -45,12 +46,16 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public int getMedianPrice(List<Ticket> tickets) {
-        var sortedTickets = tickets.stream()
-                .map(Ticket::getPrice)
-                .sorted(Integer::compare)
-                .toList();
+        List<Integer> sortedPrices = getSortedPrices(tickets);
 
-        return sortedTickets.get(sortedTickets.size() / 2);
+        if (sortedPrices.size() % 2 == 0) {
+            int firstCentrePrice = sortedPrices.get(sortedPrices.size() / 2 - 1);
+            int secondCentrePrice = sortedPrices.get(sortedPrices.size() / 2);
+
+            return (firstCentrePrice + secondCentrePrice) / 2;
+        } else {
+            return sortedPrices.get(sortedPrices.size() / 2);
+        }
     }
 
     @Override
@@ -59,7 +64,6 @@ public class TicketServiceImpl implements TicketService {
         int medianPrice = getMedianPrice(tickets);
 
         return Math.abs(avgPrice - medianPrice);
-
     }
 
     @Override
@@ -75,14 +79,12 @@ public class TicketServiceImpl implements TicketService {
                 .toList();
     }
 
-    private static long getFlightDuration(Ticket ticket) {
-        String departureString = ticket.getDepartureDate() + 'T' + ticket.getDepartureTime();
-        String arrivalString = ticket.getArrivalDate() + 'T' + ticket.getArrivalTime();
+    @Override
+    public long getFlightDuration(Ticket ticket) {
+        String departureString = ticket.getDepartureDate() + "T" + ticket.getDepartureTime();
+        String arrivalString = ticket.getArrivalDate() + "T" + ticket.getArrivalTime();
 
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .appendOptional(DateTimeFormatter.ofPattern("dd.MM.yy'T'HH:mm"))
-                .appendOptional(DateTimeFormatter.ofPattern("dd.MM.yy'T'H:mm"))
-                .toFormatter();
+        DateTimeFormatter formatter = getFormatter();
 
         LocalDateTime departure = LocalDateTime.parse(departureString, formatter);
         LocalDateTime arrival = LocalDateTime.parse(arrivalString, formatter);
@@ -90,7 +92,8 @@ public class TicketServiceImpl implements TicketService {
         return Duration.between(departure, arrival).toMinutes();
     }
 
-    private Predicate<Ticket> makeCombinedPredicate(List<TicketFiltrationCriterion> criteria) {
+    @Override
+    public Predicate<Ticket> makeCombinedPredicate(List<TicketFiltrationCriterion> criteria) {
         try {
             return criteria.stream()
                     .map(TicketFiltrationCriterion::getPredicate)
@@ -100,5 +103,19 @@ public class TicketServiceImpl implements TicketService {
             LOGGER.log(Level.INFO, "Exception occurred during making a combined predicated", e);
             throw new IllegalArgumentException("Criteria contains at least one null");
         }
+    }
+
+    private List<Integer> getSortedPrices(List<Ticket> tickets) {
+        return tickets.stream()
+                .map(Ticket::getPrice)
+                .sorted(Integer::compare)
+                .toList();
+    }
+
+    private DateTimeFormatter getFormatter() {
+        return new DateTimeFormatterBuilder()
+                .appendOptional(DateTimeFormatter.ofPattern("dd.MM.yy'T'HH:mm"))
+                .appendOptional(DateTimeFormatter.ofPattern("dd.MM.yy'T'H:mm"))
+                .toFormatter();
     }
 }
