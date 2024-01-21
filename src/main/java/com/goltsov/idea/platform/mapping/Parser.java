@@ -21,7 +21,8 @@ public class Parser {
         if (tickets != null) {
             return tickets;
         } else {
-            throw new UnsupportedFileOrFormat("Could not map file content to List. File is either empty or broken");        }
+            throw new UnsupportedFileOrFormat("Could not map file content to List. File is either empty or broken");
+        }
     }
 
     private static ObjectMapper getMapper(String fileFormat) {
